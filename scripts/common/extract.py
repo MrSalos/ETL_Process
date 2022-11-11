@@ -31,12 +31,18 @@ def download_snapshot():
     """
     Download new dataset from the source
     """
-
     create_directory_if_not_exists(source_path)
-    with open(source_path, "wb") as source_roller:
-        response = requests.get(source_url)
-        print(response.headers['Content-Type'])
-        source_roller.write(response.content)
+    
+    # Check if a file exists in the directory, if so advise it already exists
+    if os.path.isfile(source_path):
+        print('[Extract] File in ', source_path, 'already exists.')
+    else:
+        with open(source_path, "wb") as source_roller:
+            response = requests.get(source_url)
+            print(response.headers['Content-Type'])
+            source_roller.write(response.content)
+
+        print("[Extract] Snapshot downloaded")
 
 def save_new_raw_data():
     """
@@ -60,14 +66,14 @@ def save_new_raw_data():
                     reader = csv.DictReader(csv_file)
 
                     row = next(reader)
-                    print(f"[Extract] File:{file_name}\nFirst row example: {row}")
+                    print(f"[Extract] File:{file_name}\nFirst row example: {row}\n")
 
 
 def main():
     print("[Extract] Start")
-
-    # download_snapshot()
-    # print("Snapshot downloaded.")
+    download_snapshot()
+    print(f"[Extract] Saving data from {source_path} to {raw_path}")
     save_new_raw_data()
+    print("[Extract] End")
 
 main()
